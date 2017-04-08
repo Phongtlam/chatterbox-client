@@ -22,21 +22,34 @@ window.onclick = function(event) {
 
 
 
-var App = function(username, message, roomname) { 
-  this.username = username,
-  this.text = message,
-  this.roomname = roomname
-};
+// var App = function(username, message, roomname) { 
+//   this.username = username,
+//   this.text = message,
+//   this.roomname = roomname
+// };
+
+var App = function() {};
 
 var app = new App();
 
+
 // var message = new App('shawndrost','trololo', '4chan');
 
-// var message = {
-//   username: 'shawndrost',
-//   text: 'trololo',
-//   roomname: '4chan'
-// };
+var message = {
+  username: 'shawndrost',
+  text: 'trololo',
+  roomname: '4chan'
+};
+
+var Message = function(username, message, roomname) {
+  this.username = username,
+  this.message = message,
+  this.roomname = roomname
+};
+
+var message = new Message()
+
+
 var server = 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages';
 // variable for saving data returned after fetch
 var output;
@@ -47,9 +60,11 @@ App.prototype.init = function() {
 
 App.prototype.send = function(message) {
   $.ajax({
+  url: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
   type: 'POST',
   data: JSON.stringify(message), //message? 
   contentType: 'application/json',
+  dataType: "json",
   success: function (data) {
     console.log('chatterbox: Message sent');
   },
@@ -62,15 +77,16 @@ App.prototype.send = function(message) {
 
 App.prototype.fetch = function() {
   $.ajax({
-  url: server,
+  url: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
   type: 'GET',
   contentType: 'application/json',
   success: function (data) {
     for (var i = 0; i < 10; i ++){
-      $('#chats').append("<p>" + data.results[i].text + '\n' + "</p>");
+      // $('#chats').append("<p>" + data.results[i].text + '\n' + "</p>");
+      app.renderMessage(data.results[i])
     }
-    
 
+    console.log(data);
   },
   error: function (data) {
     // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -100,9 +116,24 @@ App.prototype.handleUsernameClick = function(){
 //   this.handleUsernameClick();
 // })
 
+$(document).ready(function(){
+  $('.input').submit(function(info) {
+    // var typed = $('#textbox').val();
+    // var user = 'Jason';
+    // var roomname = 'room1';
+    // var message = new App(user, typed, roomname);
+    var message = {
+  username: 'shawndrost',
+  text: 'trololo',
+  roomname: '4chan'
+};
+    console.log(message)
+    app.send(message);
+    info.preventDefault();
+  })
+})
+
+
 app.init();
-
-
-
 
 

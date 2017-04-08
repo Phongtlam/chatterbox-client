@@ -25,7 +25,15 @@
   </head>
   <body>
 
-
+    <script>
+      var nameInput = function() {
+        var person = prompt("Please enter your name", "Harry Potter");
+        if (person != null) {
+        document.getElementById("demo").innerHTML =
+          "Hello " + person + "! How are you today?";
+        }
+      }
+    </script>
 
     <div id="main">
       <h1>chatterbox</h1>
@@ -47,10 +55,10 @@
 <div class="username"></div>
 
 
-    <div class="input box">
+    <form class="input box">
     <input id="textbox" type="textarea">
     <button type="submit" id="enter">Send Message</button>
-    </div>
+    </form>
 
     <div id="chats">
 
