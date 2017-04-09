@@ -3,6 +3,8 @@ function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
 
+
+
 // Close the dropdown menu if the user clicks outside of it
 window.onclick = function(event) {
   if (!event.target.matches('.dropbtn')) {
@@ -19,121 +21,96 @@ window.onclick = function(event) {
 }
 
 
-
-
-
 // var App = function(username, message, roomname) { 
 //   this.username = username,
 //   this.text = message,
 //   this.roomname = roomname
 // };
 
-var App = function() {};
-
-var app = new App();
-
-
-// var message = new App('shawndrost','trololo', '4chan');
-
-var message = {
-  username: 'shawndrost',
-  text: 'trololo',
-  roomname: '4chan'
-};
-
-var Message = function(username, message, roomname) {
-  this.username = username,
-  this.message = message,
-  this.roomname = roomname
-};
-
-var message = new Message()
-
-
-var server = 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages';
-// variable for saving data returned after fetch
-var output;
-
-App.prototype.init = function() {
-  this.fetch();
-};
-
-App.prototype.send = function(message) {
-  $.ajax({
-  url: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
-  type: 'POST',
-  data: JSON.stringify(message), //message? 
-  contentType: 'application/json',
-  dataType: "json",
-  success: function (data) {
-    console.log('chatterbox: Message sent');
+var app =  {
+  server : 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
+  send : function(message) {
+    $.ajax({
+      // This is the url you should use to communicate with the parse API server.
+      url: app.server,
+      type: 'POST',
+      data: JSON.stringify(message),
+      contentType: 'application/json',
+      success: function (data) {
+      console.log('chatterbox: Message sent');
+      },
+      error: function (data) {
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+      console.error('chatterbox: Failed to send message', data);
+      }
+    });
   },
-  error: function (data) {
-    // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-    console.error('chatterbox: Failed to send message', data);
-  }
-});
-};
 
-App.prototype.fetch = function() {
-  $.ajax({
-  url: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
-  type: 'GET',
-  contentType: 'application/json',
-  success: function (data) {
-    for (var i = 0; i < 10; i ++){
-      // $('#chats').append("<p>" + data.results[i].text + '\n' + "</p>");
-      app.renderMessage(data.results[i])
-    }
-
-    console.log(data);
+  fetch : function() {
+    $.ajax({
+      url: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages?order=-createdAt',
+      type: 'GET',
+      contentType: 'application/json',
+      success: function (data) {
+        for (var i = 0; i < 10; i ++){
+          // $('#chats').append("<p>" + data.results[i].text + '\n' + "</p>");
+          App.renderMessage(data.results[i])
+        }
+      },
+      error: function (data) {
+        // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+        console.error('chatterbox: Failed to receive message', data);
+      }
+    });
   },
-  error: function (data) {
-    // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-    console.error('chatterbox: Failed to receive message', data);
-  }
-});
+
+  init: function() {
+    app.fetch();
+  },
+
+  clearMessages : function() {
+    $('#chats').empty(); //this might be funky, destroys everything - caveman
+  },
+
+  renderMessage : function(message) {
+    $('#chats').append("<p class='text'>" + "<a class='username'>" + message.username + "</a>" + ':' + message.text + "</p>");
+  },
+
+  renderRoom : function(room) {
+    $('#roomSelect').append("<a class='rooms'>" + message.roomname + "</a>");
+
+  },
+
+  handleUsernameClick : function(){
+      $('.username').append("<a>" + message.username + "</a>");
+  },
 }
-
-App.prototype.clearMessages = function() {
-  $('#chats').empty(); //this might be funky, destroys everything - caveman
-}
-
-App.prototype.renderMessage = function(message) {
-  $('#chats').append("<p class='text'>" + "<a class='username'>" + message.username + "</a>" + ':' + message.text + "</p>");
-}
-
-App.prototype.renderRoom = function(room) {
-  $('#roomSelect').append("<a class='rooms'>" + message.roomname + "</a>");
-
-}
-
-App.prototype.handleUsernameClick = function(){
-    $('.username').append("<a>" + message.username + "</a>");
-  };
 
 // $(document).on('click', '.username', function(){
 //   this.handleUsernameClick();
 // })
 
 $(document).ready(function(){
-  $('.input').submit(function(info) {
-    // var typed = $('#textbox').val();
-    // var user = 'Jason';
-    // var roomname = 'room1';
-    // var message = new App(user, typed, roomname);
-    var message = {
-  username: 'shawndrost',
-  text: 'trololo',
-  roomname: '4chan'
-};
-    console.log(message)
-    app.send(message);
+  //var person = prompt("What is your username?", "Username");
+  $('#input').submit(function(info) {
+    var message = $('#textbox').val();
+    var person = $('#textbox').val();
+    var roomname = null;
+    var app = new App(person, message, roomname);
+    app.send(app);
     info.preventDefault();
   })
 })
 
+// var message = {
+//   username: 'SUPERMAN',
+//   text: 'SUPPPPERR',
+//   roomname: '4chan'
+// };
 
-app.init();
+// var app = new App();
+// app.init();
+// app.send(message);
+// app.fetch();
 
 
