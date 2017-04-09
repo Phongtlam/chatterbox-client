@@ -7,7 +7,7 @@
 
     <!-- dependencies -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/underscore/underscore.js">
+    <script src="bower_components/underscore/underscore.js"></script>
     <script>
       // YOU DO NOT NEED TO EDIT THIS CODE
       if (!/(&|\?)username=/.test(window.location.search)) {
@@ -24,29 +24,35 @@
     <script src="scripts/app.js"></script>
   </head>
   <body>
+<!--     <div id='me'>
+      <script type="text/javascript">
+        // var userMe = prompt("What is your username?", "Username");
+        // app.fetch();
+      </script>
+    </div> -->
 
     <div id="main">
       <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
 
     </div>
-    <div class='new room'>
+<!--     <div class='new room'>
       <button>New Room</button>
       <input id="new room" type="textarea">
-    </div>
+    </div> -->
 
-    <div id="dropdown">
-      <button onclick="myFunction()" class="dropbtn">Rooms</button>
-      <div id="roomSelect">
-        
+    <div class="dropdown">
+    <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+      <div id="myDropdown" class="dropdown-content">
+        <button type='submit' id='lobby'>Lobby</button>
       </div>
     </div>
 
     <div class="username"></div>
 
-    <form class="input box">
-    <input id="textbox" type="textarea">
-    <button type="submit" id="enter">Send Message</button>
+    <form class="input">
+      <input id="textbox" type="textarea">
+      <button type="submit" id="enter">Send Message</button>
     </form>
 
     <div id="chats">

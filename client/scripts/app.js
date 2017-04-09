@@ -5,27 +5,37 @@ function myFunction() {
 
 
 
-// Close the dropdown menu if the user clicks outside of it
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show')) {
-        openDropdown.classList.remove('show');
-      }
-    }
-  }
-}
-
-
-// var App = function(username, message, roomname) { 
-//   this.username = username,
-//   this.text = message,
-//   this.roomname = roomname
+// // Close the dropdown menu if the user clicks outside of it
+// window.onclick = function(event) {
+//   if (!event.target.matches('.dropbtn')) {
+//     var dropdowns = document.getElementsByClassName("dropdown-content");
+//     var i;
+//     for (i = 0; i < dropdowns.length; i++) {
+//       var openDropdown = dropdowns[i];
+//       if (openDropdown.classList.contains('show')) {
+//         openDropdown.classList.remove('show');
+//       }
+//     }
+//   }
 // };
+
+
+var message = {
+  username: 'SUPERMAN',
+  text: 'SUPPPPERR',
+  roomname: '4chan'
+};
+
+var storage = [];
+
+var buttonNames = {};
+
+
+var Message = function(username, message, roomname) {
+  this.username = username;
+  this.text = message;
+  this.roomname = username;
+}
 
 var app =  {
   server : 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
@@ -46,15 +56,22 @@ var app =  {
     });
   },
 
-  fetch : function() {
+  fetch : function(roomname) {
     $.ajax({
       url: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages?order=-createdAt',
       type: 'GET',
       contentType: 'application/json',
       success: function (data) {
+        storage = data.results;
         for (var i = 0; i < 10; i ++){
+          if (!roomname === undefined ){
+            if (data.results[i].roomname === roomname){
+              app.renderMessage(data.results[i])
+            }
+          } else {
           // $('#chats').append("<p>" + data.results[i].text + '\n' + "</p>");
-          App.renderMessage(data.results[i])
+          app.renderMessage(data.results[i])
+        }
         }
       },
       error: function (data) {
@@ -65,6 +82,16 @@ var app =  {
   },
 
   init: function() {
+    $('#input').on('click', function() {
+      var person = $('#textbox').val();
+      var message = $('#textbox').val();
+      console.log(message)
+      //var message = 'HELLO WE ARE HERE';
+      var roomname = null;
+      var newMessage = new Message(person, message, roomname);
+      app.send(newMessage);
+      info.preventDefault();
+    })
     app.fetch();
   },
 
@@ -78,39 +105,67 @@ var app =  {
 
   renderRoom : function(room) {
     $('#roomSelect').append("<a class='rooms'>" + message.roomname + "</a>");
-
   },
 
   handleUsernameClick : function(){
       $('.username').append("<a>" + message.username + "</a>");
   },
-}
+
+  addRooms : function(obj) {
+    $('#myDropdown').append("<button class='room'>" + message.roomname + "</button>");
+  },
+
+};
 
 // $(document).on('click', '.username', function(){
 //   this.handleUsernameClick();
 // })
-
 $(document).ready(function(){
   //var person = prompt("What is your username?", "Username");
-  $('#input').submit(function(info) {
+var name  = window.location.search
+
+  var roomname = 'lobby';
+  var person = name.substring(name.indexOf('=') + 1);
+  console.log(person);
+  $('#enter').on('click', function(info) {
+
     var message = $('#textbox').val();
-    var person = $('#textbox').val();
-    var roomname = null;
-    var app = new App(person, message, roomname);
-    app.send(app);
+    var newMessage = new Message(person, message, roomname);
+    console.log(newMessage)
+    app.send(newMessage);
+    app.clearMessages();
     info.preventDefault();
+    // if (roomname === 'lobby'){
+    //   app.clearMessages;
+    //   storage.filter(function(obj){
+    //     app.renderMessage(obj)
+    //   })
+    // }
+    app.fetch(roomname);
+  });
+
+  $('#lobby').on('click', function(info) {
+    app.clearMessages();
+    roomname = 'lobby'
+    storage.filter(function(obj) {
+      if (obj.roomname === 'lobby') {
+        app.renderMessage(obj);
+      }
+    })
   })
+
+
+
 })
 
-// var message = {
-//   username: 'SUPERMAN',
-//   text: 'SUPPPPERR',
-//   roomname: '4chan'
-// };
-
-// var app = new App();
-// app.init();
+app.init();
 // app.send(message);
 // app.fetch();
+var makeList = function(){
+  for (var i = 0; i < storage.length; i++){
+    buttonNames[storage[i].roomname] = storage[i].roomname;
+    console.log(storage[i].roomname)
+  }
+}
 
-
+makeList();
