@@ -3,29 +3,6 @@ function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
 
-
-
-// // Close the dropdown menu if the user clicks outside of it
-// window.onclick = function(event) {
-//   if (!event.target.matches('.dropbtn')) {
-//     var dropdowns = document.getElementsByClassName("dropdown-content");
-//     var i;
-//     for (i = 0; i < dropdowns.length; i++) {
-//       var openDropdown = dropdowns[i];
-//       if (openDropdown.classList.contains('show')) {
-//         openDropdown.classList.remove('show');
-//       }
-//     }
-//   }
-// };
-
-
-var message = {
-  username: 'SUPERMAN',
-  text: 'SUPPPPERR',
-  roomname: '4chan'
-};
-
 var storage = [];
 
 var buttonNames = {};
@@ -34,7 +11,7 @@ var buttonNames = {};
 var Message = function(username, message, roomname) {
   this.username = username;
   this.text = message;
-  this.roomname = username;
+  this.roomname = roomname;
 }
 
 var app =  {
@@ -56,7 +33,7 @@ var app =  {
     });
   },
 
-  fetch : function(roomname) {
+  fetch : function() {
     $.ajax({
       url: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages?order=-createdAt',
       type: 'GET',
@@ -64,14 +41,8 @@ var app =  {
       success: function (data) {
         storage = data.results;
         for (var i = 0; i < 10; i ++){
-          if (!roomname === undefined ){
-            if (data.results[i].roomname === roomname){
-              app.renderMessage(data.results[i])
-            }
-          } else {
           // $('#chats').append("<p>" + data.results[i].text + '\n' + "</p>");
-          app.renderMessage(data.results[i])
-        }
+          app.renderMessage(storage[i]);
         }
       },
       error: function (data) {
@@ -82,16 +53,6 @@ var app =  {
   },
 
   init: function() {
-    $('#input').on('click', function() {
-      var person = $('#textbox').val();
-      var message = $('#textbox').val();
-      console.log(message)
-      //var message = 'HELLO WE ARE HERE';
-      var roomname = null;
-      var newMessage = new Message(person, message, roomname);
-      app.send(newMessage);
-      info.preventDefault();
-    })
     app.fetch();
   },
 
@@ -104,11 +65,11 @@ var app =  {
   },
 
   renderRoom : function(room) {
-    $('#roomSelect').append("<a class='rooms'>" + message.roomname + "</a>");
+    $('#roomSelect').append("<a class='rooms'>" + room.roomname + "</a>");
   },
 
   handleUsernameClick : function(){
-      $('.username').append("<a>" + message.username + "</a>");
+    $('.username').append("<a>" + message.username + "</a>");
   },
 
   addRooms : function(obj) {
@@ -117,32 +78,38 @@ var app =  {
 
 };
 
-// $(document).on('click', '.username', function(){
-//   this.handleUsernameClick();
-// })
 $(document).ready(function(){
   //var person = prompt("What is your username?", "Username");
-var name  = window.location.search
+  var name  = window.location.search
 
   var roomname = 'lobby';
   var person = name.substring(name.indexOf('=') + 1);
-  console.log(person);
-  $('#enter').on('click', function(info) {
 
+  $('#enter').on('click', function() {
     var message = $('#textbox').val();
-    var newMessage = new Message(person, message, roomname);
-    console.log(newMessage)
+    var roomname = null;
+    var newMessage = new Message(person, message);
     app.send(newMessage);
     app.clearMessages();
-    info.preventDefault();
-    // if (roomname === 'lobby'){
-    //   app.clearMessages;
-    //   storage.filter(function(obj){
-    //     app.renderMessage(obj)
-    //   })
-    // }
-    app.fetch(roomname);
+    event.preventDefault();
+    if (roomname === 'lobby'){
+      app.clearMessages();
+      storage.filter(function(obj){
+        app.renderMessage(obj)
+      })
+    }
+    app.fetch();
   });
+
+  $('#newroom').on('click', function() {
+    var room = $('#makeroom').val();
+    var newRoom = new Message(null, null, room);
+    app.send(newRoom);
+
+    $('#myDropdown').append("<button type='submit'>" + room + "</button>");
+    event.preventDefault();
+    app.fetch();
+  })
 
   $('#lobby').on('click', function(info) {
     app.clearMessages();
@@ -152,20 +119,17 @@ var name  = window.location.search
         app.renderMessage(obj);
       }
     })
-  })
+  });
 
 
 
-})
+});
 
 app.init();
-// app.send(message);
-// app.fetch();
-var makeList = function(){
-  for (var i = 0; i < storage.length; i++){
-    buttonNames[storage[i].roomname] = storage[i].roomname;
-    console.log(storage[i].roomname)
-  }
-}
 
-makeList();
+
+
+
+
+
+
