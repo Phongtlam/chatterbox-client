@@ -12,7 +12,7 @@ var Message = function(username, message, roomname) {
   this.username = username;
   this.text = message;
   this.roomname = roomname;
-}
+};
 
 var app =  {
   server : 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
